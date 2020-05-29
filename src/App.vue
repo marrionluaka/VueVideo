@@ -1,20 +1,24 @@
-<template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
-  </div>
+<template lang="pug">
+  main#app
+    Tile(@onSelected='test')
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import HelloWorld from "./components/HelloWorld.vue";
+import Vue from "vue"
+import { Tile } from "./components/ui"
 
 export default Vue.extend({
   name: "App",
   components: {
-    HelloWorld
+    Tile
+  },
+
+  methods: {
+    test() {
+      console.log('called')
+    }
   }
-});
+})
 </script>
 
 <style lang="stylus">
