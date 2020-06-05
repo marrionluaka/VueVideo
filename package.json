@@ -10,13 +10,16 @@
   },
   "dependencies": {
     "@types/ramda": "0.27.6",
+    "autoprefixer": "9.8.0",
     "core-js": "^3.6.5",
     "ramda": "0.27.0",
+    "tailwindcss": "1.4.6",
     "vue": "^2.6.11",
     "vue-function-api": "3.0.0-beta.0",
     "vuex": "^3.4.0"
   },
   "devDependencies": {
+    "@fullhuman/postcss-purgecss": "2.2.0",
     "@types/chai": "^4.2.11",
     "@types/mocha": "^5.2.4",
     "@types/sinon": "9.0.4",

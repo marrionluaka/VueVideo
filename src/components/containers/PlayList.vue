@@ -1,5 +1,8 @@
 <template lang="pug">
-  div
+  ul
+    li Currently playing: My video
+    li(v-for="(video, index) in videos" :key="video.id")
+      Tile(:tileIndex="index" :tileId="video.id")
 </template>
 
 <script lang="ts">
@@ -21,7 +24,7 @@ export default createComponent({
     videos: {
       type: Array,
       required: true,
-      default: []
+      default: () => []
     }
   },
 

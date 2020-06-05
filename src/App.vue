@@ -1,32 +1,36 @@
 <template lang="pug">
-  main#app
-    Tile(@onSelected='test')
+  main#app.flex.justify-center.content-center.my-20
+    .flex.flex-wrap.container
+      VideoPlayer(class="w-full md:w-4/6")
+      PlayList(:videos="test" class="w-full md:w-2/6")
 </template>
 
 <script lang="ts">
 import Vue from "vue"
-import { Tile } from "./components/ui"
+import { PlayList, VideoPlayer } from "./components/containers"
 
 export default Vue.extend({
   name: "App",
-  components: {
-    Tile
+
+  computed: {
+    test() {
+      return [
+        { id: 1 },
+        { id: 2 },
+        { id: 3 },
+        { id: 4 },
+        { id: 5 }
+      ]
+    }
   },
 
-  methods: {
-    test() {
-      console.log('called')
-    }
+  components: {
+    PlayList,
+    VideoPlayer
   }
 })
 </script>
 
 <style lang="stylus">
-#app
-  font-family Avenir, Helvetica, Arial, sans-serif
-  -webkit-font-smoothing antialiased
-  -moz-osx-font-smoothing grayscale
-  text-align center
-  color #2c3e50
-  margin-top 60px
+
 </style>
