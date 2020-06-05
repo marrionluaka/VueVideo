@@ -1,8 +1,16 @@
 <template lang="pug">
-  ul
-    li Currently playing: My video
-    li(v-for="(video, index) in videos" :key="video.id")
-      Tile(:tileIndex="index" :tileId="video.id")
+  div
+    div
+      img(src='')
+      p Currently playing: My video
+
+    div
+      span.progress-bar progress
+      span.auto-play AutoPlay
+
+    ul
+      li(v-for="(video, index) in videos" :key="video.id")
+        Tile(:tileIndex="index" :tileId="video.id")
 </template>
 
 <script lang="ts">
