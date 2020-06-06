@@ -1,8 +1,8 @@
 <template lang="pug">
   main#app.flex.justify-center.content-center.my-20
     .flex.flex-wrap.container
-      VideoPlayer(class="w-full md:w-4/6")
-      PlayList(:videos="test" class="w-full md:w-2/6")
+      VideoPlayer(class="w-full md:w-full lg:w-4/6")
+      PlayList(:videos="test" class="w-full md:w-full lg:w-2/6")
 </template>
 
 <script lang="ts">

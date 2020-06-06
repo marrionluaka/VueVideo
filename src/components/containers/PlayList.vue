@@ -1,12 +1,16 @@
 <template lang="pug">
-  div
-    div
-      img(src='')
-      p Currently playing: My video
+  .playlist.pb-10.rounded.overflow-hidden
+    .playlist-playing-banner.flex.flex-row.items-center.px-4.py-4
+      img.w-20.mr-3(src="../../assets/logo.png" alt="Vue logo")
+      p.text-xl Build a video player with Tailwind and Vue 3 composition api
 
-    div
-      span.progress-bar progress
-      span.auto-play AutoPlay
+    PlayListMeta(
+      @onChange="test"
+      :lessonsWatched="1"
+      :progress="progress"
+      :numberOfLessons="12"
+      :autoPlayEnabled="false"
+    )
 
     ul
       li(v-for="(video, index) in videos" :key="video.id")
@@ -15,15 +19,16 @@
 
 <script lang="ts">
 import * as R from 'ramda'
-import { createComponent, computed, ref, SetupContext } from 'vue-function-api'
+import { defineComponent, computed, ref, SetupContext } from '@vue/composition-api'
 
 import { SET_VIDEO_ID } from '@/store'
-import { Tile, TileNavigator, PlayListProgressBar } from '../ui'
+import { Tile, PlayListMeta, TileNavigator, PlayListProgressBar } from '../ui'
 import { ExtractPropTypes } from 'vue-function-api/dist/component/componentProps'
 
-export default createComponent({
+export default defineComponent({
   components: {
     Tile,
+    PlayListMeta,
     TileNavigator,
     PlayListProgressBar
   },
@@ -42,6 +47,12 @@ export default createComponent({
 
     return {
       tileIndex,
+
+      progress: computed(() => (3/12) * 100),
+
+      test(e: any) {
+        console.log(e.target.checked)
+      },
 
       onVideoSelected(id: number, index: number) {
         tileIndex.value = index
@@ -64,6 +75,10 @@ export default createComponent({
 })
 </script>
 
-<style lang="pug">
-  
+<style lang="stylus">
+  .playlist
+    background #fafafa
+
+    &-playing-banner
+      background #cccccc
 </style>
