@@ -1,83 +1,73 @@
 <template lang="pug">
-  .playlist.pb-10.rounded.overflow-hidden
-    .playlist-playing-banner.flex.flex-row.items-center.px-4.py-4
+  .playlist.rounded.overflow-hidden
+    .playlist-playing-banner.flex.flex-row.items-center.px-2.py-4
       img.w-20.mr-3(src="../../assets/logo.png" alt="Vue logo")
-      p.text-xl Build a video player with Tailwind and Vue 3 composition api
+      p.text-xl Build a responsive video player with Tailwind and Vue 3 composition api
 
     PlayListMeta(
-      @onChange="test"
-      :lessonsWatched="1"
       :progress="progress"
-      :numberOfLessons="12"
-      :autoPlayEnabled="false"
+      :lessonsWatched="lessonsWatched"
+      :numberOfLessons="numberOfLessons"
+      :autoPlayEnabled="autoPlayEnabled"
+      @onChange="setAutoPlay"
     )
 
-    ul
-      li(v-for="(video, index) in videos" :key="video.id")
-        Tile(:tileIndex="index" :tileId="video.id")
+    ul.playlist-tile-container
+      li(v-for="(video, index) in playList" :key="video.id")
+        Tile(
+          :video="video"
+          :watched="false"
+          :tileIndex="index"
+          @onSelected="selectVideo"
+        )
+        //- :nowPlaying="video.id === videoId"
+            :nextUp="tileIndex + 1 === index"
 </template>
 
 <script lang="ts">
 import * as R from 'ramda'
-import { defineComponent, computed, ref, SetupContext } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 
-import { SET_VIDEO_ID } from '@/store'
-import { Tile, PlayListMeta, TileNavigator, PlayListProgressBar } from '../ui'
-import { ExtractPropTypes } from 'vue-function-api/dist/component/componentProps'
+import { useVideos } from '@/hooks/useVideos'
+import { Tile, PlayListMeta, PlayListProgressBar } from '../ui'
 
 export default defineComponent({
   components: {
     Tile,
     PlayListMeta,
-    TileNavigator,
     PlayListProgressBar
   },
 
-  props: {
-    videos: {
-      type: Array,
-      required: true,
-      default: () => []
-    }
-  },
-
-  setup({ videos }, { root: { $store } }) {
-    const tileIndex = ref(0)
-    const videoLength = videos.length
+  setup() {
+    const { playList, selectVideo } = useVideos()
+    const numberOfLessons = computed(() => playList.value.length)
+    const autoPlayEnabled = ref(localStorage.getItem('autoPlay') === "true")
+    const lessonsWatched = computed(() => playList.value.filter((p:any) => p.watched).length)
 
     return {
-      tileIndex,
-
-      progress: computed(() => (3/12) * 100),
-
-      test(e: any) {
-        console.log(e.target.checked)
+      playList,
+      lessonsWatched,
+      numberOfLessons,
+      autoPlayEnabled,
+      selectVideo,
+      setAutoPlay: (e: any) => {
+        autoPlayEnabled.value = e.target.checked
+        localStorage.setItem('autoPlay', String(e.target.checked))
       },
-
-      onVideoSelected(id: number, index: number) {
-        tileIndex.value = index
-        $store.dispatch(SET_VIDEO_ID, id)
-      },
-
-      onShowNext() {
-        if (!videoLength || R.gte(tileIndex.value, videoLength)) return
-        tileIndex.value += 1
-        $store.dispatch(SET_VIDEO_ID, R.path(['id'], videos[tileIndex.value]))
-      },
-
-      onShowPrev() {
-        if (!videoLength || R.lte(tileIndex.value, 0)) return
-        tileIndex.value -= 1
-        $store.dispatch(SET_VIDEO_ID, R.path(['id'], videos[tileIndex.value]))
-      }
+      progress: computed(() => (lessonsWatched.value / numberOfLessons.value) * 100),
     }
   }
 })
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
   .playlist
     background #fafafa
+
+    &-tile-container
+      max-height 470px
+      overflow hidden
+      overflow-y scroll
 
     &-playing-banner
       background #cccccc

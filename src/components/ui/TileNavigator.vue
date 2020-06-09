@@ -1,5 +1,5 @@
 <template lang="pug" functional>
   div
-    a.showNextSlide(href="#" v-on:click="listeners.onShowNextSlide")
-    a.showPreviousSlide(href="#" v-on:click="listeners.onShowPreviousSlide")
+    a.showPreviousSlide(href="#" v-on:click="listeners.onShowPreviousSlide") <
+    a.showNextSlide(href="#" v-on:click="listeners.onShowNextSlide") >
 </template>

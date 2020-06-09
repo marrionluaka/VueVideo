@@ -1,8 +1,8 @@
 <template lang="pug">
   main#app.flex.justify-center.content-center.my-20
-    .flex.flex-wrap.container
+    .flex.flex-wrap.container.px-2
       VideoPlayer(class="w-full md:w-full lg:w-4/6")
-      PlayList(:videos="test" class="w-full md:w-full lg:w-2/6")
+      PlayList(class="w-full md:w-full lg:w-2/6")
 </template>
 
 <script lang="ts">
@@ -11,18 +11,6 @@ import { PlayList, VideoPlayer } from "./components/containers"
 
 export default Vue.extend({
   name: "App",
-
-  computed: {
-    test() {
-      return [
-        { id: 1 },
-        { id: 2 },
-        { id: 3 },
-        { id: 4 },
-        { id: 5 }
-      ]
-    }
-  },
 
   components: {
     PlayList,

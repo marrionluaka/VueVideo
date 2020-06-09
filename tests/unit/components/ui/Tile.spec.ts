@@ -17,7 +17,9 @@ describe("Tile.vue", () => {
 
     wrapper = shallowMount(Tile, {
       propsData: {
-        tileId: 357,
+        video: {
+          id: 357
+        },
         tileIndex: 1
       },
 
@@ -33,6 +35,6 @@ describe("Tile.vue", () => {
 
   it('@onSelected: emits an "onSelected" event when a user clicks on it.', () => {
     wrapper.find('a').trigger('click')
-    expect(onSelected.calledWith(1, 357)).to.be.true
+    expect(onSelected.calledWith(357, 1)).to.be.true
   })
 })
