@@ -17,7 +17,7 @@ export default function(cb: () => any) {
   )
 }
 
-export function waitForInitialization(cb: () => any, timeout: number = 100): void {
+export function waitForInitialization(cb: () => any, timeout = 100): void {
   setTimeout(() => {
     cb()
   }, timeout)

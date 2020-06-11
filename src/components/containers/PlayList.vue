@@ -16,12 +16,11 @@
       li(v-for="(video, index) in playList" :key="video.id")
         Tile(
           :video="video"
-          :watched="false"
           :tileIndex="index"
+          :nowPlaying="video.id === nowPlaying"
+          :upNext="tileIndex + 1 === index"
           @onSelected="selectVideo"
         )
-        //- :nowPlaying="video.id === videoId"
-            :nextUp="tileIndex + 1 === index"
 </template>
 
 <script lang="ts">
@@ -39,22 +38,27 @@ export default defineComponent({
   },
 
   setup() {
-    const { playList, selectVideo } = useVideos()
+    const {
+      playList,
+      selectVideo,
+      setAutoPlay,
+      autoPlayEnabled,
+      tileIndex,
+      currentPlayingVideo
+    } = useVideos()
     const numberOfLessons = computed(() => playList.value.length)
-    const autoPlayEnabled = ref(localStorage.getItem('autoPlay') === "true")
     const lessonsWatched = computed(() => playList.value.filter((p:any) => p.watched).length)
 
     return {
       playList,
+      tileIndex,
       lessonsWatched,
       numberOfLessons,
       autoPlayEnabled,
-      selectVideo,
-      setAutoPlay: (e: any) => {
-        autoPlayEnabled.value = e.target.checked
-        localStorage.setItem('autoPlay', String(e.target.checked))
-      },
+      nowPlaying: computed(() => currentPlayingVideo.value.id),
       progress: computed(() => (lessonsWatched.value / numberOfLessons.value) * 100),
+      selectVideo,
+      setAutoPlay
     }
   }
 })

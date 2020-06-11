@@ -2,6 +2,7 @@
 import { expect } from 'chai'
 import { createSandbox, SinonSandbox } from 'sinon'
 
+import { playListData } from '@/hooks/play-list-data'
 import { useVideos, IVideoComposition } from '@/hooks/useVideos'
 import mountComposition, { waitForInitialization } from './helpers'
 
@@ -19,14 +20,7 @@ describe("useVideos.ts", () => {
       getItem: sandbox.spy()
     }
 
-    currentVideo = {
-      id: 1,
-      title: 'Food qualities braise chicken cuts bowl through slices butternut',
-      author: 'Super Mario',
-      duration: 200000,
-      source: '',
-      watched: false
-    }
+    currentVideo = playListData[0]
 
     mountComposition(() => sut = useVideos())
   })
@@ -45,14 +39,7 @@ describe("useVideos.ts", () => {
   })
 
   it("@selectVideo(): selects a video from the playlist given an id.", done => {
-    const nowPlaying = {
-      id: 3,
-      title: 'Sweet renders bone-in marrow richness kitchen, fricassee basted pork shoulder',
-      author: 'Super Mario',
-      duration: 400000,
-      source: '',
-      watched: false
-    }
+    const nowPlaying = playListData[2]
     
     waitForInitialization(() => {
       sut.selectVideo(3, 1)
@@ -62,14 +49,7 @@ describe("useVideos.ts", () => {
   })
 
   it("@showNextVideo(): increments the tileIndex while it is less than video's length.", done => {
-    const nextVid = {
-      id: 3,
-      title: 'Sweet renders bone-in marrow richness kitchen, fricassee basted pork shoulder',
-      author: 'Super Mario',
-      duration: 400000,
-      source: '',
-      watched: false
-    }
+    const nextVid = playListData[2]
 
     waitForInitialization(() => {
       sut.showNextVideo()
@@ -79,14 +59,8 @@ describe("useVideos.ts", () => {
   })
 
   it("@showPreviousVideo(): does not decrements the tileIndex when the tileIndex is already at zero.", done => {
-    const prevVid =  {
-      id: 2,
-      title: 'One-pot low heat plenty of time adobo fat raw soften fruit',
-      author: 'Super Mario',
-      duration: 300000,
-      source: '',
-      watched: false
-    }
+    const prevVid = playListData[1]
+
     waitForInitialization(() => {
       sut.showPreviousVideo()
       expect(sut.currentPlayingVideo.value).to.eql(prevVid)
@@ -96,8 +70,11 @@ describe("useVideos.ts", () => {
 
   it("@videoFinishedPlaying(): ", done => {
     waitForInitialization(() => {
+      sut.setAutoPlay({ target: { checked: true } })
+
       sut.videoFinishedPlaying(1)
-      expect(sut.playList.value[0].watched).to.be.true
+
+      expect(sut.currentPlayingVideo.value).to.eql(playListData[2])
       done()
     })
   })

@@ -1,58 +1,72 @@
-const playListData = [
+export const playListData = [
   {
     id: 1,
-    title: 'Food qualities braise chicken cuts bowl through slices butternut',
+    title: 'Ocean feeding frenzy',
     author: 'Super Mario',
     duration: 200000,
-    source: '',
+    sources: [
+      { src: 'https://vjs.zencdn.net/v/oceans.mp4', type: 'video/mp4'}
+    ],
     watched: false
   },
   {
     id: 2,
-    title: 'One-pot low heat plenty of time adobo fat raw soften fruit',
+    title: 'Big buck bunny short film',
     author: 'Super Mario',
     duration: 300000,
-    source: '',
+    sources: [
+      { src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', type: 'video/mp4'}
+    ],
     watched: false
   },
   {
     id: 3,
-    title: 'Sweet renders bone-in marrow richness kitchen, fricassee basted pork shoulder',
+    title: 'Elephants dream short film',
     author: 'Super Mario',
     duration: 400000,
-    source: '',
+    sources: [
+      { src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4', type: 'video/mp4'}
+    ],
     watched: false
   },
   {
     id: 4,
-    title: 'Minutes clever slotted tongs scrape, brown steem undisturbed rice',
+    title: 'Chromecast commercial: For bigger blazes',
     author: 'Super Mario',
     duration: 600000,
-    source: '',
+    sources: [
+      { src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', type: 'video/mp4'}
+    ],
     watched: false
   },
   {
     id: 5,
-    title: 'Delicious butternut squash hunk. Flavor centerpiece plate, delicious',
+    title: 'Chromecast commercial: For bigger escapes',
     author: 'Super Mario',
     duration: 500000,
-    source: '',
+    sources: [
+      { src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4', type: 'video/mp4'}
+    ],
     watched: false
   },
   {
     id: 6,
-    title: 'Sweet effortlessly pork, low heat smoker soy sauce flavor meat, rice fruit',
+    title: 'Chromecast commercial: For bigger fun',
     author: 'Super Mario',
     duration: 200000,
-    source: '',
+    sources: [
+      { src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4', type: 'video/mp4'}
+    ],
     watched: false
   },
   {
     id: 7,
-    title: 'Fruit soften edges frond slices onion snack pork steem on wines',
+    title: 'Chromecast commercial: For bigger joy rides',
     author: 'Super Mario',
     duration: 700000,
-    source: '',
+    sources: [
+      { src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', type: 'video/mp4'}
+    ],
     watched: false
   }
 ]

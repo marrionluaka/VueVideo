@@ -1,36 +1,54 @@
 import Vue from 'vue'
 import * as R from 'ramda'
-import { computed, onMounted, ref, Ref } from '@vue/composition-api'
+import { computed, onMounted, Ref } from '@vue/composition-api'
 
 import { fetchPlayListData } from '@/hooks/play-list-data'
+import { getStorageItem } from '@/utils'
 
 interface IState {
+  tileIndex: number
   playList: Map<number, any>
+  autoPlayEnabled: boolean
   currentPlayingVideo: any
 }
 
 export interface IVideoComposition {
   currentPlayingVideo: any
+  tileIndex: Readonly<Ref<number>>
+  playList: Readonly<Ref<readonly any[]>>
+  autoPlayEnabled: Readonly<Ref<boolean>>
   showNextVideo: () => void
   showPreviousVideo: () => void
-  selectVideo: (id: number, index: number) => any
+  setAutoPlay: (e: any) => void
   videoFinishedPlaying: (id: number) => void
-  playList: Readonly<Ref<readonly any[]>>
+  selectVideo: (id: number, index: number) => any
 }
 
 const _state = Vue.observable({
   tileIndex: 0,
   playList: new Map(),
-  currentPlayingVideo: {}
+  currentPlayingVideo: {},
+  autoPlayEnabled: false
 })
 
 export function useVideos(): IVideoComposition {
-  onMounted(async () => await _getPlayList(_state))
+  onMounted(async () => {
+    await _getPlayList(_state)
+    _state.autoPlayEnabled = localStorage.getItem('autoPlay') === "true"
+  })
+
+  const showNextVideo = () => {
+    if (!playList.value.length || R.gte(_state.tileIndex, playList.value.length - 1)) return
+    const id = R.prop('id', playList.value[_state.tileIndex += 1])
+    _state.currentPlayingVideo = _state.playList.get(id)
+  }
 
   const playList = computed(() => Array.from(_state.playList.values()))
-
+  
 	return {
     playList,
+    tileIndex: computed(() => _state.tileIndex),
+    autoPlayEnabled: computed(() => _state.autoPlayEnabled),
     currentPlayingVideo: computed(() => _state.currentPlayingVideo),
 
     selectVideo: (id: number, index: number): any => {
@@ -39,11 +57,7 @@ export function useVideos(): IVideoComposition {
       _state.currentPlayingVideo = _state.playList.get(id)
     },
 
-    showNextVideo: () => {
-      if (!playList.value.length || R.gte(_state.tileIndex, playList.value.length - 1)) return
-      const id = R.prop('id', playList.value[_state.tileIndex += 1])
-      _state.currentPlayingVideo = _state.playList.get(id)
-    },
+    showNextVideo,
 
     showPreviousVideo: () => {
       if (!playList.value.length || R.lte(_state.tileIndex, 0)) return
@@ -51,12 +65,17 @@ export function useVideos(): IVideoComposition {
       _state.currentPlayingVideo = _state.playList.get(id)
     },
 
+    setAutoPlay: (e: any) => {
+      _state.autoPlayEnabled = e.target.checked
+      localStorage.setItem('autoPlay', String(e.target.checked))
+    },
+
     videoFinishedPlaying(id: number): void {
       if (!_state.playList.has(id)) throw 'Invalid video id passed in.'
 
-      _setWatchedVideos(_state.playList, id)
+      localStorage.setItem('watchedVideos', JSON.stringify([...getStorageItem('watchedVideos'), id]))
 
-      localStorage.setItem('watchedVideos', JSON.stringify([..._getStorageItem('watchedVideos'), id]))
+      if (_state.autoPlayEnabled) showNextVideo()
     }
   }
 
@@ -69,20 +88,11 @@ export function useVideos(): IVideoComposition {
     R.forEach((id: number) => {
       if (!playList.has(id)) return
 
-      _setWatchedVideos(playList, id)
+      playList.set(id, R.set(R.lensProp("watched"), true, playList.get(id)))
 
-    }, _getStorageItem('watchedVideos'))
+    }, getStorageItem('watchedVideos'))
 
     state.playList = playList
     state.currentPlayingVideo = playList.get(1)
-  }
-  
-  function _setWatchedVideos(playList: Map<number, any>, id: number) {
-    playList.set(id, R.set(R.lensProp("watched"), true, playList.get(id)))
-  }
-  
-  function _getStorageItem(key: string): Array<any> {
-    const item = localStorage.getItem(key)
-    return item ? JSON.parse(item) : []
   }
 }

@@ -4,7 +4,7 @@
       span.pl-4.pr-3 {{ props.lessonsWatched }}
       .playlist-meta-progress-bar.flex-1.rounded-full.overflow-hidden
         .playlist-meta-progress-bar-filled(:style="{ width: `${props.progress}%` }")
-      span.pl-3.pr-3 {{ props.numberOfLessons }} lessons
+      span.pl-3.pr-3 {{ props.numberOfLessons }} videos
 
     div.text-xs.flex.flex-row.items-center
       span.pr-2 Autoplay
