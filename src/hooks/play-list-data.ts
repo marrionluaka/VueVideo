@@ -15,7 +15,7 @@ export const playListData = [
     author: 'Super Mario',
     duration: 300000,
     sources: [
-      { src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', type: 'video/mp4'}
+      { src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', type: 'video/mp4'}
     ],
     watched: false
   },
@@ -25,7 +25,7 @@ export const playListData = [
     author: 'Super Mario',
     duration: 400000,
     sources: [
-      { src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4', type: 'video/mp4'}
+      { src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4', type: 'video/mp4'}
     ],
     watched: false
   },
@@ -35,7 +35,7 @@ export const playListData = [
     author: 'Super Mario',
     duration: 600000,
     sources: [
-      { src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', type: 'video/mp4'}
+      { src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', type: 'video/mp4'}
     ],
     watched: false
   },
@@ -45,7 +45,7 @@ export const playListData = [
     author: 'Super Mario',
     duration: 500000,
     sources: [
-      { src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4', type: 'video/mp4'}
+      { src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4', type: 'video/mp4'}
     ],
     watched: false
   },
@@ -55,7 +55,7 @@ export const playListData = [
     author: 'Super Mario',
     duration: 200000,
     sources: [
-      { src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4', type: 'video/mp4'}
+      { src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4', type: 'video/mp4'}
     ],
     watched: false
   },
@@ -65,7 +65,7 @@ export const playListData = [
     author: 'Super Mario',
     duration: 700000,
     sources: [
-      { src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', type: 'video/mp4'}
+      { src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', type: 'video/mp4'}
     ],
     watched: false
   }
