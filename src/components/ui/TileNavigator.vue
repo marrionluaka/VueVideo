@@ -1,11 +1,11 @@
 <template lang="pug" functional>
   .flex.justify-center
-    a.showPreviousSlide(
+    a.showPreviousSlide.p-3(
       v-if="props.previousVideo"
       href="#"
       v-on:click="listeners.onShowPreviousSlide"
     ) < {{ props.previousVideo.title }}
-    a.showNextSlide(
+    a.showNextSlide.p-3(
       v-if="props.nextVideo"
       href="#"
       v-on:click="listeners.onShowNextSlide"
