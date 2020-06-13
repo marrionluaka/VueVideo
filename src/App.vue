@@ -7,18 +7,21 @@
 
 <script lang="ts">
 import Vue from "vue"
+import { defineComponent } from '@vue/composition-api'
+
+import { provideStore } from './hooks/useStore'
 import { PlayList, VideoPlayer } from "./components/containers"
 
-export default Vue.extend({
+export default defineComponent({
   name: "App",
 
   components: {
     PlayList,
     VideoPlayer
+  },
+
+  setup(_, { root: { $store } }) {
+    provideStore($store)
   }
 })
 </script>
-
-<style lang="stylus">
-
-</style>

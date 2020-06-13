@@ -1,6 +1,8 @@
 {
   "name": "vue-video-player",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "Build a responsive video player with Tailwind and Vue 3 composition api.",
+  "author": "Marrion Luaka",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

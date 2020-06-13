@@ -13,33 +13,20 @@
 import * as R from 'ramda'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
-import {
-  defineComponent,
-  computed,
-  ref,
-  SetupContext,
-  toRefs,
-  onMounted,
-  onUnmounted,
-  watch
-} from '@vue/composition-api'
+import { defineComponent, computed, onMounted, onUnmounted } from '@vue/composition-api'
 
 import { TileNavigator } from '../ui'
-import { useVideos } from '@/hooks/useVideos'
+import { useStore, useMapState, useMapGetters } from '@/hooks/useStore'
+import { SET_CURRENT_PLAYING_VIDEO, SET_TILE_INDEX, VIDEO_FINISHED_PLAYING } from '@/store'
 
 export default defineComponent({
   components: { TileNavigator },
 
   setup() {
+    const store: any = useStore()
+    const mapState: any = useMapState(store.state)
+    const mapGetters: any = useMapGetters(store.getters)
     let player: any
-    const {
-      showNextVideo,
-      showPreviousVideo,
-      currentPlayingVideo,
-      videoFinishedPlaying,
-      tileIndex,
-      playList
-    } = useVideos()
 
     onMounted(() => {
       player = videojs('video', { 
@@ -47,36 +34,63 @@ export default defineComponent({
         preload: 'auto' 
       })
 
-      player.ready(function() {
-        const sources = R.path(['value', 'sources'], currentPlayingVideo)
-        sources && player.src(sources)
-
-        if (localStorage.getItem('autoPlay') === "true") {
-          player.autoplay('play')
-        }
-
-        watch(
-          () => currentPlayingVideo.value.title,
-          (title, prevTitle) => {
-            if (prevTitle && prevTitle !== title) {
-              player.src(currentPlayingVideo.value.sources)
-              player.play()
-            }
-          }
-        )
-      })
-
-      player.on('ended', () => videoFinishedPlaying(currentPlayingVideo.value.id))
+      player.on('ended', _onVideoEnded)
+      player.ready(_onPlayerReady(player))
+      store.subscribe(_onStoreSubscribe(player))
     })
 
     onUnmounted(() => !!player && player.dispose())
 
     return {
-      showNextVideo, 
-      showPreviousVideo,
-      currentPlayingVideo,
-      nextVideo: computed(() => playList.value[tileIndex.value + 1]),
-      previousVideo: computed(() => playList.value[tileIndex.value - 1])
+      nextVideo: computed(() => mapGetters.playList()[mapState.tileIndex() + 1]),
+      previousVideo: computed(() => mapGetters.playList()[mapState.tileIndex() - 1]),
+
+      showPreviousVideo() {
+        if (!mapGetters.playList().length || R.lte(mapState.tileIndex(), 0)) return
+        _handleNavigation(true)
+      },
+
+      showNextVideo: _showNextVideo
+    }
+
+    function _onPlayerReady(player: any) {
+      return function() {
+        const sources = mapState.currentPlayingVideo().sources
+        sources && player.src(sources)
+      }
+    }
+
+    function _onVideoEnded() {
+      store.commit(VIDEO_FINISHED_PLAYING, mapState.currentPlayingVideo().id)
+
+      if (mapState.autoPlay()){
+        _showNextVideo()
+      }
+    }
+
+    function _onStoreSubscribe(player: any) {
+      return function (mutation: any, storeState: any) {
+        if (mutation.type !== SET_CURRENT_PLAYING_VIDEO) return
+
+        if (localStorage.getItem('autoPlay') === "true") {
+          player.autoplay('play')
+        }
+
+        player.src(storeState.currentPlayingVideo.sources)
+      }
+    }
+
+    function _showNextVideo() {
+      if (!mapGetters.playList().length || R.gte(mapState.tileIndex(), mapGetters.playList().length - 1)) return
+      _handleNavigation()
+    }
+
+    function _handleNavigation(negate = false) {
+      const idx = negate ? mapState.tileIndex() - 1 : mapState.tileIndex() + 1
+      const id = R.prop('id', mapGetters.playList()[idx])
+
+      store.commit(SET_TILE_INDEX, idx)
+      store.commit(SET_CURRENT_PLAYING_VIDEO, mapState.playList().get(id))
     }
   }
 })

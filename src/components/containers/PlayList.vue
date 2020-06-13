@@ -6,14 +6,14 @@
 
     PlayListMeta(
       :progress="progress"
-      :lessonsWatched="lessonsWatched"
-      :numberOfLessons="numberOfLessons"
+      :lessonsWatched="state.lessonsWatched"
+      :numberOfLessons="state.numberOfLessons"
       :autoPlayEnabled="autoPlayEnabled"
       @onChange="setAutoPlay"
     )
 
     ul.playlist-tile-container
-      li(v-for="(video, index) in playList" :key="video.id")
+      li(v-for="(video, index) in state.playList" :key="video.id")
         Tile(
           :video="video"
           :tileIndex="index"
@@ -25,10 +25,17 @@
 
 <script lang="ts">
 import * as R from 'ramda'
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, onMounted, reactive } from '@vue/composition-api'
 
-import { useVideos } from '@/hooks/useVideos'
+import { SET_AUTO_PLAY, VIDEO_FINISHED_PLAYING } from '@/store'
 import { Tile, PlayListMeta, PlayListProgressBar } from '../ui'
+import { useStore, useMapState, useMapGetters } from '@/hooks/useStore'
+
+interface PlayListState {
+  playList: Array<any>
+  lessonsWatched: number
+  numberOfLessons: number
+}
 
 export default defineComponent({
   components: {
@@ -38,27 +45,44 @@ export default defineComponent({
   },
 
   setup() {
-    const {
-      playList,
-      selectVideo,
-      setAutoPlay,
-      autoPlayEnabled,
-      tileIndex,
-      currentPlayingVideo
-    } = useVideos()
-    const numberOfLessons = computed(() => playList.value.length)
-    const lessonsWatched = computed(() => playList.value.filter((p:any) => p.watched).length)
+    const store: any = useStore()
+    const mapState: any = useMapState(store.state)
+    const mapGetters: any = useMapGetters(store.getters)
+
+    const state = reactive({
+      playList: [],
+      lessonsWatched: 0,
+      numberOfLessons: 0
+    })
+
+    onMounted(async() => {
+      await store.dispatch('getPlayList')
+
+      state.playList = mapGetters.playList()
+      _setLessonsData(state)
+
+      store.subscribe((mutation: any, storeState: any) => {
+        if (mutation.type !== VIDEO_FINISHED_PLAYING) return
+
+        state.playList = Array.from(storeState.playList.values())
+        _setLessonsData(state)
+      })
+    })
 
     return {
-      playList,
-      tileIndex,
-      lessonsWatched,
-      numberOfLessons,
-      autoPlayEnabled,
-      nowPlaying: computed(() => currentPlayingVideo.value.id),
-      progress: computed(() => (lessonsWatched.value / numberOfLessons.value) * 100),
-      selectVideo,
-      setAutoPlay
+      state,
+      tileIndex: computed(() => mapState.tileIndex()),
+      autoPlayEnabled: computed(() => mapState.autoPlay()),
+      nowPlaying: computed(() => mapState.currentPlayingVideo().id),
+      progress: computed(() => (state.lessonsWatched / state.numberOfLessons) * 100),
+
+      setAutoPlay: (e: any) => store.commit(SET_AUTO_PLAY, e.target.checked),
+      selectVideo: (id: number, index: number) => store.dispatch('selectVideo', { id, index })
+    }
+
+    function _setLessonsData(state: PlayListState) {
+      state.lessonsWatched = state.playList.filter((p:any) => p.watched).length
+      state.numberOfLessons = state.playList.length
     }
   }
 })

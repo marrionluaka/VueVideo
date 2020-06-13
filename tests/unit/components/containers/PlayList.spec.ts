@@ -5,10 +5,13 @@ import VueCompositionAPI from '@vue/composition-api'
 import { createSandbox, SinonSpy, SinonSandbox } from 'sinon'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 
+import { SET_AUTO_PLAY } from '@/store'
+import * as storeInjector from '@/hooks/useStore'
 import { PlayList } from '@/components/containers'
 
 Vue.config.silent = true
 describe("PlayList.vue", () => {
+  let store: any
   let wrapper: any
   let sandbox: SinonSandbox
 
@@ -25,6 +28,25 @@ describe("PlayList.vue", () => {
       setItem: sandbox.spy(),
       getItem: sandbox.spy()
     }
+
+    store = {
+      state: {
+        playList: new Map(),
+        tileIndex: 0,
+        autoPlay: false,
+        currentPlayingVideo: {}
+      },
+
+      commit: sandbox.spy(),
+      dispatch: sandbox.spy(),
+      subscribe: sandbox.spy(),
+
+      getters: {
+        playList: [{}]
+      }
+    }
+
+    sandbox.stub(storeInjector, 'useStore').returns(store)
 
     wrapper = shallowMount(PlayList, {
       localVue
@@ -43,10 +65,16 @@ describe("PlayList.vue", () => {
     }
 
     wrapper.vm.setAutoPlay(e)
-    expect(wrapper.vm.autoPlayEnabled).to.be.true
 
-    e.target.checked = false
-    wrapper.vm.setAutoPlay(e)
-    expect(wrapper.vm.autoPlayEnabled).to.be.false
+    expect(store.commit.calledWith(SET_AUTO_PLAY, e.target.checked)).to.be.true
+  })
+
+  it("@selectVideo(): selects a video from the play list.", () => {
+    const id = 2
+    const index = 1
+
+    wrapper.vm.selectVideo(id, index)
+
+    expect(store.dispatch.calledWith('selectVideo', { id, index })).to.be.true
   })
 })
