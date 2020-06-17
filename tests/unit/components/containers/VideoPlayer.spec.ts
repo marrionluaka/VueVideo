@@ -6,7 +6,7 @@ import VueCompositionAPI from '@vue/composition-api'
 import { createSandbox, SinonSandbox } from 'sinon'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 
-import { playListData } from '@/hooks/play-list-data'
+import { playListData } from '@/store/play-list-data'
 import { VideoPlayer } from '@/components/containers'
 import { SET_TILE_INDEX, SET_CURRENT_PLAYING_VIDEO } from '@/store'
 

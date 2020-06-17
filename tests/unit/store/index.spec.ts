@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { createSandbox, SinonSandbox } from 'sinon'
 
-import { playListData } from '@/hooks/play-list-data'
+import { playListData } from '@/store/play-list-data'
 import store, { SET_AUTO_PLAY, VIDEO_FINISHED_PLAYING } from '@/store'
 
 describe("store/index.ts", () => {

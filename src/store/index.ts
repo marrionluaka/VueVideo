@@ -2,7 +2,7 @@ import Vue from "vue"
 import Vuex from "vuex"
 import * as R from 'ramda'
 
-import { fetchPlayListData } from '../hooks/play-list-data'
+import { fetchPlayListData } from './play-list-data'
 
 Vue.use(Vuex)
 
