@@ -12,6 +12,13 @@ export const SET_TILE_INDEX = 'set_tile_index'
 export const VIDEO_FINISHED_PLAYING = 'video_finished_playing'
 export const SET_CURRENT_PLAYING_VIDEO = 'set_current_playing_video'
 
+export interface IStoreState {
+  tileIndex: number
+  autoPlay: boolean
+  playList: Map<number, any>
+  currentPlayingVideo: any
+}
+
 export default new Vuex.Store({
   state: {
     tileIndex: 0,

@@ -3,10 +3,9 @@ import Vue from 'vue'
 import { expect } from 'chai'
 import * as videojs from 'video.js'
 import VueCompositionAPI from '@vue/composition-api'
-import { createSandbox, SinonSandbox, SinonStub } from 'sinon'
+import { createSandbox, SinonSandbox } from 'sinon'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 
-import * as storeInjector from '@/hooks/useStore'
 import { playListData } from '@/hooks/play-list-data'
 import { VideoPlayer } from '@/components/containers'
 import { SET_TILE_INDEX, SET_CURRENT_PLAYING_VIDEO } from '@/store'
@@ -47,14 +46,19 @@ describe("VideoPlayer.vue", () => {
       }
     }
 
-    sandbox.stub(storeInjector, 'useStore').returns(store)
     sandbox.stub(videojs, 'default').returns({
       ...videojs.default.prototype,
       on: sandbox.spy(),
       ready: sandbox.spy()
     })
 
-    wrapper = shallowMount(VideoPlayer, { localVue })
+    wrapper = shallowMount(VideoPlayer, {
+      store,
+      localVue,
+      mocks: {
+        $store: store
+      }
+    })
   })
 
   afterEach(() => {

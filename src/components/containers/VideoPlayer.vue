@@ -13,19 +13,34 @@
 import * as R from 'ramda'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
+import { useState, useGetters, useMutations } from 'vuex-composition-helpers'
 import { defineComponent, computed, onMounted, onUnmounted } from '@vue/composition-api'
 
 import { TileNavigator } from '../ui'
-import { useStore, useMapState, useMapGetters } from '@/hooks/useStore'
+import { IStoreState } from '@/store'
 import { SET_CURRENT_PLAYING_VIDEO, SET_TILE_INDEX, VIDEO_FINISHED_PLAYING } from '@/store'
 
 export default defineComponent({
   components: { TileNavigator },
 
-  setup() {
-    const store: any = useStore()
-    const mapState: any = useMapState(store.state)
-    const mapGetters: any = useMapGetters(store.getters)
+  setup(_, { root: { $store } }) {
+    const {
+      set_tile_index: setTileIndex,
+      video_finished_playing: videoFinishedPlaying,
+      set_current_playing_video: setCurrentPlayingVideo
+    } = useMutations([SET_TILE_INDEX, VIDEO_FINISHED_PLAYING, SET_CURRENT_PLAYING_VIDEO])
+    const { playList: playListArray } = useGetters(['playList'])
+    const {
+      autoPlay,
+      playList,
+      tileIndex,
+      currentPlayingVideo
+    } = useState<IStoreState>([
+      'autoPlay',
+      'playList',
+      'tileIndex',
+      'currentPlayingVideo'
+    ])
     let player: any
 
     onMounted(() => {
@@ -36,17 +51,17 @@ export default defineComponent({
 
       player.on('ended', _onVideoEnded)
       player.ready(_onPlayerReady(player))
-      store.subscribe(_onStoreSubscribe(player))
+      $store.subscribe(_onStoreSubscribe(player))
     })
 
     onUnmounted(() => !!player && player.dispose())
 
     return {
-      nextVideo: computed(() => mapGetters.playList()[mapState.tileIndex() + 1]),
-      previousVideo: computed(() => mapGetters.playList()[mapState.tileIndex() - 1]),
+      nextVideo: computed(() => playListArray.value[tileIndex.value + 1]),
+      previousVideo: computed(() => playListArray.value[tileIndex.value - 1]),
 
       showPreviousVideo() {
-        if (!mapGetters.playList().length || R.lte(mapState.tileIndex(), 0)) return
+        if (!playListArray.value.length || R.lte(tileIndex.value, 0)) return
         _handleNavigation(true)
       },
 
@@ -55,15 +70,15 @@ export default defineComponent({
 
     function _onPlayerReady(player: any) {
       return function() {
-        const sources = mapState.currentPlayingVideo().sources
+        const sources = currentPlayingVideo.value.sources
         sources && player.src(sources)
       }
     }
 
     function _onVideoEnded() {
-      store.commit(VIDEO_FINISHED_PLAYING, mapState.currentPlayingVideo().id)
+      videoFinishedPlaying(currentPlayingVideo.value.id)
 
-      if (mapState.autoPlay()){
+      if (autoPlay.value){
         _showNextVideo()
       }
     }
@@ -81,16 +96,16 @@ export default defineComponent({
     }
 
     function _showNextVideo() {
-      if (!mapGetters.playList().length || R.gte(mapState.tileIndex(), mapGetters.playList().length - 1)) return
+      if (!playListArray.value.length || R.gte(tileIndex.value, playListArray.value.length - 1)) return
       _handleNavigation()
     }
 
     function _handleNavigation(negate = false) {
-      const idx = negate ? mapState.tileIndex() - 1 : mapState.tileIndex() + 1
-      const id = R.prop('id', mapGetters.playList()[idx])
+      const idx = negate ? tileIndex.value - 1 : tileIndex.value + 1
+      const id = R.prop('id', playListArray.value[idx])
 
-      store.commit(SET_TILE_INDEX, idx)
-      store.commit(SET_CURRENT_PLAYING_VIDEO, mapState.playList().get(id))
+      setTileIndex(idx)
+      setCurrentPlayingVideo(playList.value.get(id))
     }
   }
 })

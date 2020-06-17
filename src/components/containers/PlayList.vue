@@ -30,7 +30,6 @@ import { defineComponent, computed, ref, onMounted, reactive } from '@vue/compos
 
 import { Tile, PlayListMeta } from '../ui'
 import { SET_AUTO_PLAY, VIDEO_FINISHED_PLAYING } from '@/store'
-import { useStore, useMapState, useMapGetters } from '@/hooks/useStore'
 
 interface PlayListState {
   playList: Array<any>
