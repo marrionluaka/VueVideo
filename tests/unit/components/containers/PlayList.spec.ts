@@ -2,11 +2,10 @@
 import Vue from 'vue'
 import { expect } from 'chai'
 import VueCompositionAPI from '@vue/composition-api'
-import { createSandbox, SinonSpy, SinonSandbox } from 'sinon'
+import { createSandbox, SinonSandbox } from 'sinon'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 
 import { SET_AUTO_PLAY } from '@/store'
-import * as storeInjector from '@/hooks/useStore'
 import { PlayList } from '@/components/containers'
 
 Vue.config.silent = true
@@ -46,10 +45,12 @@ describe("PlayList.vue", () => {
       }
     }
 
-    sandbox.stub(storeInjector, 'useStore').returns(store)
-
     wrapper = shallowMount(PlayList, {
-      localVue
+      store,
+      localVue,
+      mocks: {
+        $store: store
+      }
     })
   })
 

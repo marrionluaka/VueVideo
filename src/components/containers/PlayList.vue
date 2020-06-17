@@ -8,7 +8,7 @@
       :progress="progress"
       :lessonsWatched="state.lessonsWatched"
       :numberOfLessons="state.numberOfLessons"
-      :autoPlayEnabled="autoPlayEnabled"
+      :autoPlayEnabled="autoPlay"
       @onChange="setAutoPlay"
     )
 
@@ -17,7 +17,7 @@
         Tile(
           :video="video"
           :tileIndex="index"
-          :nowPlaying="video.id === nowPlaying"
+          :nowPlaying="video.id === currentPlayingVideo.id"
           :upNext="tileIndex + 1 === index"
           @onSelected="selectVideo"
         )
@@ -25,10 +25,11 @@
 
 <script lang="ts">
 import * as R from 'ramda'
+import { useState, useGetters, useMutations, useActions } from 'vuex-composition-helpers'
 import { defineComponent, computed, ref, onMounted, reactive } from '@vue/composition-api'
 
+import { Tile, PlayListMeta } from '../ui'
 import { SET_AUTO_PLAY, VIDEO_FINISHED_PLAYING } from '@/store'
-import { Tile, PlayListMeta, PlayListProgressBar } from '../ui'
 import { useStore, useMapState, useMapGetters } from '@/hooks/useStore'
 
 interface PlayListState {
@@ -40,14 +41,14 @@ interface PlayListState {
 export default defineComponent({
   components: {
     Tile,
-    PlayListMeta,
-    PlayListProgressBar
+    PlayListMeta
   },
 
-  setup() {
-    const store: any = useStore()
-    const mapState: any = useMapState(store.state)
-    const mapGetters: any = useMapGetters(store.getters)
+  setup(_, { root: { $store } }) {
+    const { playList } = useGetters(['playList'])
+    const { set_auto_play: setAutoPlay } = useMutations([SET_AUTO_PLAY])
+    const { selectVideo, getPlayList } = useActions(['selectVideo', 'getPlayList'])
+    const { autoPlay, tileIndex, currentPlayingVideo } = useState(['autoPlay', 'tileIndex', 'currentPlayingVideo'])
 
     const state = reactive({
       playList: [],
@@ -56,12 +57,12 @@ export default defineComponent({
     })
 
     onMounted(async() => {
-      await store.dispatch('getPlayList')
+      await getPlayList()
 
-      state.playList = mapGetters.playList()
+      state.playList = playList.value
       _setLessonsData(state)
 
-      store.subscribe((mutation: any, storeState: any) => {
+      $store.subscribe((mutation: any, storeState: any) => {
         if (mutation.type !== VIDEO_FINISHED_PLAYING) return
 
         state.playList = Array.from(storeState.playList.values())
@@ -71,13 +72,13 @@ export default defineComponent({
 
     return {
       state,
-      tileIndex: computed(() => mapState.tileIndex()),
-      autoPlayEnabled: computed(() => mapState.autoPlay()),
-      nowPlaying: computed(() => mapState.currentPlayingVideo().id),
+      autoPlay,
+      tileIndex,
+      currentPlayingVideo,
       progress: computed(() => (state.lessonsWatched / state.numberOfLessons) * 100),
 
-      setAutoPlay: (e: any) => store.commit(SET_AUTO_PLAY, e.target.checked),
-      selectVideo: (id: number, index: number) => store.dispatch('selectVideo', { id, index })
+      setAutoPlay: (e: any) => setAutoPlay(e.target.checked),
+      selectVideo: (id: number, index: number) => selectVideo({ id, index })
     }
 
     function _setLessonsData(state: PlayListState) {

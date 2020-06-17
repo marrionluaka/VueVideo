@@ -29,7 +29,8 @@
     "tailwindcss": "1.4.6",
     "video.js": "7.8.2",
     "vue": "^2.6.11",
-    "vuex": "^3.4.0"
+    "vuex": "^3.4.0",
+    "vuex-composition-helpers": "1.0.17"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "2.2.0",
